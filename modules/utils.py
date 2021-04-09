@@ -5,7 +5,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from absl import logging
-from modules.dataset import load_tfrecord_dataset
+from retinaface_tf2.modules.dataset import load_tfrecord_dataset
 
 
 def load_yaml(load_path):
