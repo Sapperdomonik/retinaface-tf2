@@ -19,7 +19,7 @@ flags.DEFINE_string('save_folder', './widerface_evaluate/widerface_txt/',
 flags.DEFINE_boolean('origin_size', True,
                      'whether use origin image size to evaluate')
 flags.DEFINE_boolean('save_image', True, 'whether save evaluation images')
-flags.DEFINE_float('iou_th', 0.4, 'iou threshold for nms')
+flags.DEFINE_float('iou_th', 0, 'iou threshold for nms')
 flags.DEFINE_float('score_th', 0.02, 'score threshold for nms')
 flags.DEFINE_float('vis_th', 0.5, 'threshold for visualization')
 
@@ -57,7 +57,7 @@ def load_info(txt_path):
 def main(_argv):
     # init
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
+    #os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     logger = tf.get_logger()
     logger.disabled = True
@@ -86,6 +86,7 @@ def main(_argv):
     testset_list = os.path.join(testset_folder, 'label.txt')
 
     img_paths, _ = load_info(testset_list)
+    counter = 1
     for img_index, img_path in enumerate(img_paths):
         print(" [{} / {}] det {}".format(img_index + 1, len(img_paths),
                                          img_path))
@@ -159,7 +160,9 @@ def main(_argv):
                     draw_bbox_landm(img_raw, outputs[prior_index],
                                     img_height_raw, img_width_raw)
             cv2.imwrite(os.path.join('./results', cfg['sub_name'], sub_dir,
-                                     img_name), img_raw)
+                                     str(counter)+".png"), img_raw)
+                        
+            counter = counter+1
 
 
 if __name__ == '__main__':

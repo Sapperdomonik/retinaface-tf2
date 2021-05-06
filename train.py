@@ -1,9 +1,3 @@
-# This file is part of project link.developers/insightfacepoc.
-# It is copyrighted by the contributors recorded in the version control history of the file,
-# available from its original location https://gitlab.com/link.developers.beta/insightfacepoc.
-#
-# SPDX-License-Identifier: MPL-2.0
-
 from absl import app, flags, logging
 from absl.flags import FLAGS
 import os
@@ -102,9 +96,10 @@ def main(_):
         checkpoint.step.assign_add(1)
         steps = checkpoint.step.numpy()
 
+        print(inputs.shape, labels.shape)
         total_loss, losses = train_step(inputs, labels)
         
-        if steps % 100 == 0:
+        if steps % 10 == 0:
 
             prog_bar.update("epoch={}/{}, loss={:.4f}, lr={:.1e}".format(
             ((steps - 1) // steps_per_epoch) + 1, cfg['epoch'],
