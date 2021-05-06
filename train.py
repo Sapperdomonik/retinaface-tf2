@@ -96,7 +96,6 @@ def main(_):
         checkpoint.step.assign_add(1)
         steps = checkpoint.step.numpy()
 
-        print(inputs.shape, labels.shape)
         total_loss, losses = train_step(inputs, labels)
         
         if steps % 10 == 0:
