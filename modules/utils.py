@@ -1,3 +1,9 @@
+# This file is part of project link.developers/insightfacepoc.
+# It is copyrighted by the contributors recorded in the version control history of the file,
+# available from its original location https://gitlab.com/link.developers.beta/insightfacepoc.
+#
+# SPDX-License-Identifier: MPL-2.0
+
 import cv2
 import yaml
 import sys
@@ -5,7 +11,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from absl import logging
-from retinaface_tf2.modules.dataset import load_tfrecord_dataset
+from modules.dataset import load_tfrecord_dataset
 
 
 def load_yaml(load_path):
@@ -168,8 +174,8 @@ def draw_bbox_landm(img, ann, img_height, img_width):
                          int(ann[9] * img_height)), 1, (255, 0, 0), 2)
         cv2.circle(img, (int(ann[10] * img_width),
                          int(ann[11] * img_height)), 1, (0, 100, 255), 2)
-        cv2.circle(img, (int(ann[12] * img_width),
-                         int(ann[13] * img_height)), 1, (255, 0, 100), 2)
+        #cv2.circle(img, (int(ann[12] * img_width),
+        #                 int(ann[13] * img_height)), 1, (255, 0, 100), 2)
 
 
 def draw_anchor(img, prior, img_height, img_width):

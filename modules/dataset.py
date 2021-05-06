@@ -1,5 +1,5 @@
 import tensorflow as tf
-from retinaface_tf2.modules.anchor import encode_tf
+from modules.anchor import encode_tf
 
 
 def _parse_tfrecord(img_dim, using_bin, using_flip, using_distort,
@@ -20,8 +20,6 @@ def _parse_tfrecord(img_dim, using_bin, using_flip, using_distort,
             'image/object/landmark2/y': tf.io.VarLenFeature(tf.float32),
             'image/object/landmark3/x': tf.io.VarLenFeature(tf.float32),
             'image/object/landmark3/y': tf.io.VarLenFeature(tf.float32),
-            'image/object/landmark4/x': tf.io.VarLenFeature(tf.float32),
-            'image/object/landmark4/y': tf.io.VarLenFeature(tf.float32),
             'image/object/landmark/valid': tf.io.VarLenFeature(tf.float32)}
         if using_bin:
             features['image/encoded'] = tf.io.FixedLenFeature([], tf.string)
@@ -46,8 +44,6 @@ def _parse_tfrecord(img_dim, using_bin, using_flip, using_distort,
              tf.sparse.to_dense(x['image/object/landmark2/y']),
              tf.sparse.to_dense(x['image/object/landmark3/x']),
              tf.sparse.to_dense(x['image/object/landmark3/y']),
-             tf.sparse.to_dense(x['image/object/landmark4/x']),
-             tf.sparse.to_dense(x['image/object/landmark4/y']),
              tf.sparse.to_dense(x['image/object/landmark/valid'])], axis=1)
 
         img, labels = _transform_data(
@@ -131,9 +127,8 @@ def _flip(img, labels):
                                 1 - labels[:, 6],  labels[:, 7],
                                 1 - labels[:, 4],  labels[:, 5],
                                 1 - labels[:, 8],  labels[:, 9],
-                                1 - labels[:, 12], labels[:, 13],
                                 1 - labels[:, 10], labels[:, 11],
-                                labels[:, 14]], axis=1)
+                                labels[:, 12]], axis=1)
 
         return flip_img, flip_labels
 
@@ -192,8 +187,7 @@ def _crop(img, labels, max_loop=250):
              labels_t[:, 6] - w_offset,  labels_t[:, 7] - h_offset,
              labels_t[:, 8] - w_offset,  labels_t[:, 9] - h_offset,
              labels_t[:, 10] - w_offset, labels_t[:, 11] - h_offset,
-             labels_t[:, 12] - w_offset, labels_t[:, 13] - h_offset,
-             labels_t[:, 14]], axis=1)
+             labels_t[:, 12]], axis=1)
 
         return tf.cond(valid_crop == 1,
                        lambda: (max_loop, img_t, labels_t),
@@ -205,7 +199,7 @@ def _crop(img, labels, max_loop=250):
         [tf.constant(-1), img, labels],
         shape_invariants=[tf.TensorShape([]),
                           tf.TensorShape([None, None, 3]),
-                          tf.TensorShape([None, 15])])
+                          tf.TensorShape([None, 13])])
 
     return img, labels
 
@@ -238,10 +232,9 @@ def _resize(img, labels, img_dim):
                      labels[:, 4] / w_f,  labels[:, 5] / h_f,
                      labels[:, 6] / w_f,  labels[:, 7] / h_f,
                      labels[:, 8] / w_f,  labels[:, 9] / h_f,
-                     labels[:, 10] / w_f, labels[:, 11] / h_f,
-                     labels[:, 12] / w_f, labels[:, 13] / h_f], axis=1)
+                     labels[:, 10] / w_f, labels[:, 11] / h_f], axis=1)
     locs = tf.clip_by_value(locs, 0, 1)
-    labels = tf.concat([locs, labels[:, 14][:, tf.newaxis]], axis=1)
+    labels = tf.concat([locs, labels[:, 12][:, tf.newaxis]], axis=1)
 
     resize_case = tf.random.uniform([], 0, 5, dtype=tf.int32)
 

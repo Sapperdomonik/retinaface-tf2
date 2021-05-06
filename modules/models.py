@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.applications import MobileNetV2, ResNet50
 from tensorflow.keras.layers import Input, Conv2D, ReLU, LeakyReLU
-from retinaface_tf2.modules.anchor import decode_tf, prior_box_tf
+from modules.anchor import decode_tf, prior_box_tf
 
 
 def _regularizer(weights_decay):
@@ -176,13 +176,13 @@ class LandmarkHead(tf.keras.layers.Layer):
     def __init__(self, num_anchor, wd, name='LandmarkHead', **kwargs):
         super(LandmarkHead, self).__init__(name=name, **kwargs)
         self.num_anchor = num_anchor
-        self.conv = Conv2D(filters=num_anchor * 10, kernel_size=1, strides=1)
+        self.conv = Conv2D(filters=num_anchor * 8, kernel_size=1, strides=1)
 
     def call(self, x):
         h, w = tf.shape(x)[1], tf.shape(x)[2]
         x = self.conv(x)
 
-        return tf.reshape(x, [-1, h * w * self.num_anchor, 10])
+        return tf.reshape(x, [-1, h * w * self.num_anchor, 8])
 
 
 class ClassHead(tf.keras.layers.Layer):

@@ -13,12 +13,12 @@ def MultiBoxLoss(num_class=2, neg_pos_ratio=3):
         num_prior = tf.shape(y_true)[1]
 
         loc_pred = tf.reshape(y_pred[0], [num_batch * num_prior, 4])
-        landm_pred = tf.reshape(y_pred[1], [num_batch * num_prior, 10])
+        landm_pred = tf.reshape(y_pred[1], [num_batch * num_prior, 8])
         class_pred = tf.reshape(y_pred[2], [num_batch * num_prior, num_class])
         loc_true = tf.reshape(y_true[..., :4], [num_batch * num_prior, 4])
-        landm_true = tf.reshape(y_true[..., 4:14], [num_batch * num_prior, 10])
-        landm_valid = tf.reshape(y_true[..., 14], [num_batch * num_prior, 1])
-        class_true = tf.reshape(y_true[..., 15], [num_batch * num_prior, 1])
+        landm_true = tf.reshape(y_true[..., 4:12], [num_batch * num_prior, 8])
+        landm_valid = tf.reshape(y_true[..., 12], [num_batch * num_prior, 1])
+        class_true = tf.reshape(y_true[..., 13], [num_batch * num_prior, 1])
 
         # define filter mask: class_true = 1 (pos), 0 (neg), -1 (ignore)
         #                     landm_valid = 1 (w landm), 0 (w/o landm)
