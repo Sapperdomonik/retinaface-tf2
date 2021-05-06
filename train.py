@@ -98,7 +98,7 @@ def main(_):
 
         total_loss, losses = train_step(inputs, labels)
         
-        if steps % 10 == 0:
+        if steps % 100 == 0:
 
             prog_bar.update("epoch={}/{}, loss={:.4f}, lr={:.1e}".format(
             ((steps - 1) // steps_per_epoch) + 1, cfg['epoch'],
