@@ -156,7 +156,7 @@ def main(_argv):
                 parents=True, exist_ok=True)
         if FLAGS.save_image:
             for prior_index in range(len(outputs)):
-                if outputs[prior_index][15] >= FLAGS.vis_th:
+                if outputs[prior_index][13] >= FLAGS.vis_th:
                     draw_bbox_landm(img_raw, outputs[prior_index],
                                     img_height_raw, img_width_raw)
             cv2.imwrite(os.path.join('./results', cfg['sub_name'], sub_dir,
