@@ -154,7 +154,7 @@ def draw_bbox_landm(img, ann, img_height, img_width):
     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     # confidence
-    text = "{:.4f}".format(ann[15])
+    text = "{:.4f}".format(ann[13])
     cv2.putText(img, text, (int(ann[0] * img_width), int(ann[1] * img_height)),
                 cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
 
