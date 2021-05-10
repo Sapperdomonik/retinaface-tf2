@@ -136,9 +136,9 @@ def pad_input_image(img, max_steps):
 def recover_pad_output(outputs, pad_params):
     """recover the padded output effect"""
     img_h, img_w, img_pad_h, img_pad_w = pad_params
-    recover_xy = np.reshape(outputs[:, :14], [-1, 7, 2]) * \
+    recover_xy = np.reshape(outputs[:, :12], [-1, 6, 2]) * \
         [(img_pad_w + img_w) / img_w, (img_pad_h + img_h) / img_h]
-    outputs[:, :14] = np.reshape(recover_xy, [-1, 14])
+    outputs[:, :12] = np.reshape(recover_xy, [-1, 12])
 
     return outputs
 
@@ -159,7 +159,7 @@ def draw_bbox_landm(img, ann, img_height, img_width):
                 cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
 
     # landmark
-    if ann[14] > 0:
+    if ann[12] > 0:
         cv2.circle(img, (int(ann[4] * img_width),
                          int(ann[5] * img_height)), 1, (255, 255, 0), 2)
         cv2.circle(img, (int(ann[6] * img_width),
