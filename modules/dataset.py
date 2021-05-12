@@ -32,19 +32,19 @@ def _parse_tfrecord(img_dim, using_bin, using_flip, using_distort,
             img = tf.image.decode_jpeg(image_encoded, channels=3)
 
         labels = tf.stack(
-            [tf.sparse.to_dense(x['image/object/bbox/xmin']), 0
-             tf.sparse.to_dense(x['image/object/bbox/ymin']), 1
-             tf.sparse.to_dense(x['image/object/bbox/xmax']), 2
-             tf.sparse.to_dense(x['image/object/bbox/ymax']), 3
-             tf.sparse.to_dense(x['image/object/landmark0/x']), 4
-             tf.sparse.to_dense(x['image/object/landmark0/y']), 5
-             tf.sparse.to_dense(x['image/object/landmark1/x']), 6
-             tf.sparse.to_dense(x['image/object/landmark1/y']), 7
-             tf.sparse.to_dense(x['image/object/landmark2/x']), 8
-             tf.sparse.to_dense(x['image/object/landmark2/y']), 9
-             tf.sparse.to_dense(x['image/object/landmark3/x']), 10
-             tf.sparse.to_dense(x['image/object/landmark3/y']), 11
-             tf.sparse.to_dense(x['image/object/landmark/valid'])], axis=1) 12
+            [tf.sparse.to_dense(x['image/object/bbox/xmin']),
+             tf.sparse.to_dense(x['image/object/bbox/ymin']),
+             tf.sparse.to_dense(x['image/object/bbox/xmax']),
+             tf.sparse.to_dense(x['image/object/bbox/ymax']),
+             tf.sparse.to_dense(x['image/object/landmark0/x']),
+             tf.sparse.to_dense(x['image/object/landmark0/y']),
+             tf.sparse.to_dense(x['image/object/landmark1/x']),
+             tf.sparse.to_dense(x['image/object/landmark1/y']),
+             tf.sparse.to_dense(x['image/object/landmark2/x']),
+             tf.sparse.to_dense(x['image/object/landmark2/y']),
+             tf.sparse.to_dense(x['image/object/landmark3/x']),
+             tf.sparse.to_dense(x['image/object/landmark3/y']),
+             tf.sparse.to_dense(x['image/object/landmark/valid'])], axis=1)
 
         img, labels = _transform_data(
             img_dim, using_flip, using_distort, using_encoding, priors,
