@@ -5,7 +5,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from absl import logging
-from retinaface_tf2.modules.dataset import load_tfrecord_dataset
+from modules.dataset import load_tfrecord_dataset
 
 
 def load_yaml(load_path):
@@ -136,9 +136,9 @@ def pad_input_image(img, max_steps):
 def recover_pad_output(outputs, pad_params):
     """recover the padded output effect"""
     img_h, img_w, img_pad_h, img_pad_w = pad_params
-    recover_xy = np.reshape(outputs[:, :14], [-1, 7, 2]) * \
+    recover_xy = np.reshape(outputs[:, :12], [-1, 6, 2]) * \
         [(img_pad_w + img_w) / img_w, (img_pad_h + img_h) / img_h]
-    outputs[:, :14] = np.reshape(recover_xy, [-1, 14])
+    outputs[:, :12] = np.reshape(recover_xy, [-1, 12])
 
     return outputs
 
@@ -154,12 +154,12 @@ def draw_bbox_landm(img, ann, img_height, img_width):
     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     # confidence
-    text = "{:.4f}".format(ann[15])
+    text = "{:.4f}".format(ann[13])
     cv2.putText(img, text, (int(ann[0] * img_width), int(ann[1] * img_height)),
                 cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
 
     # landmark
-    if ann[14] > 0:
+    if ann[12] > 0:
         cv2.circle(img, (int(ann[4] * img_width),
                          int(ann[5] * img_height)), 1, (255, 255, 0), 2)
         cv2.circle(img, (int(ann[6] * img_width),
@@ -168,8 +168,8 @@ def draw_bbox_landm(img, ann, img_height, img_width):
                          int(ann[9] * img_height)), 1, (255, 0, 0), 2)
         cv2.circle(img, (int(ann[10] * img_width),
                          int(ann[11] * img_height)), 1, (0, 100, 255), 2)
-        cv2.circle(img, (int(ann[12] * img_width),
-                         int(ann[13] * img_height)), 1, (255, 0, 100), 2)
+        #cv2.circle(img, (int(ann[12] * img_width),
+        #                 int(ann[13] * img_height)), 1, (255, 0, 100), 2)
 
 
 def draw_anchor(img, prior, img_height, img_width):

@@ -172,9 +172,9 @@ def _encode_landm(matched, priors, variances):
     """
 
     # dist b/t match center and prior's center
-    matched = tf.reshape(matched, [tf.shape(matched)[0], 5, 2])
+    matched = tf.reshape(matched, [tf.shape(matched)[0], 4, 2])
     priors = tf.broadcast_to(
-        tf.expand_dims(priors, 1), [tf.shape(matched)[0], 5, 4])
+        tf.expand_dims(priors, 1), [tf.shape(matched)[0], 4, 4])
     g_cxcy = matched[:, :, :2] - priors[:, :, :2]
     # encode variance
     g_cxcy /= (variances[0] * priors[:, :, 2:])
@@ -250,9 +250,9 @@ def _jaccard(box_a, box_b):
 def decode_tf(labels, priors, variances=[0.1, 0.2]):
     """tensorflow decoding"""
     bbox = _decode_bbox(labels[:, :4], priors, variances)
-    landm = _decode_landm(labels[:, 4:14], priors, variances)
-    landm_valid = labels[:, 14][:, tf.newaxis]
-    conf = labels[:, 15][:, tf.newaxis]
+    landm = _decode_landm(labels[:, 4:12], priors, variances)
+    landm_valid = labels[:, 12][:, tf.newaxis]
+    conf = labels[:, 13][:, tf.newaxis]
 
     return tf.concat([bbox, landm, landm_valid, conf], axis=1)
 
@@ -291,6 +291,5 @@ def _decode_landm(pre, priors, variances=[0.1, 0.2]):
         [priors[:, :2] + pre[:, :2] * variances[0] * priors[:, 2:],
          priors[:, :2] + pre[:, 2:4] * variances[0] * priors[:, 2:],
          priors[:, :2] + pre[:, 4:6] * variances[0] * priors[:, 2:],
-         priors[:, :2] + pre[:, 6:8] * variances[0] * priors[:, 2:],
-         priors[:, :2] + pre[:, 8:10] * variances[0] * priors[:, 2:]], axis=1)
+         priors[:, :2] + pre[:, 6:8] * variances[0] * priors[:, 2:]], axis=1)
     return landms

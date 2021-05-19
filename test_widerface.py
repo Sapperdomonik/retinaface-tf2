@@ -22,6 +22,7 @@ flags.DEFINE_boolean('save_image', True, 'whether save evaluation images')
 flags.DEFINE_float('iou_th', 0.4, 'iou threshold for nms')
 flags.DEFINE_float('score_th', 0.02, 'score threshold for nms')
 flags.DEFINE_float('vis_th', 0.5, 'threshold for visualization')
+flags.DEFINE_string('input_img_folder', '', 'Use image folder directly instead of label file')
 
 
 def load_info(txt_path):
@@ -57,7 +58,7 @@ def load_info(txt_path):
 def main(_argv):
     # init
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
+    #os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
     logger = tf.get_logger()
     logger.disabled = True
@@ -82,13 +83,21 @@ def main(_argv):
         exit()
 
     # evaluation on testing dataset
-    testset_folder = cfg['testing_dataset_path']
-    testset_list = os.path.join(testset_folder, 'label.txt')
+    if FLAGS.input_img_folder == '':
+        testset_folder = cfg['testing_dataset_path']
+        testset_list = os.path.join(testset_folder, 'label.txt')
+        img_paths, _ = load_info(testset_list)
+    else:
+        img_paths = os.listdir(FLAGS.input_img_folder)
 
-    img_paths, _ = load_info(testset_list)
+    counter = 1
     for img_index, img_path in enumerate(img_paths):
+        if FLAGS.input_img_folder != '':
+         img_path = os.path.join(FLAGS.input_img_folder, img_path)
+
         print(" [{} / {}] det {}".format(img_index + 1, len(img_paths),
                                          img_path))
+
         img_raw = cv2.imread(img_path, cv2.IMREAD_COLOR)
         img_height_raw, img_width_raw, _ = img_raw.shape
         img = np.float32(img_raw.copy())
@@ -123,31 +132,31 @@ def main(_argv):
         outputs = recover_pad_output(outputs, pad_params)
 
         # write results
-        img_name = os.path.basename(img_path)
+        #img_name = os.path.basename(img_path)
         sub_dir = os.path.basename(os.path.dirname(img_path))
-        save_name = os.path.join(
-            FLAGS.save_folder, sub_dir, img_name.replace('.jpg', '.txt'))
+        #save_name = os.path.join(
+        #    FLAGS.save_folder, sub_dir, img_name.replace('.jpg', '.txt'))
 
-        pathlib.Path(os.path.join(FLAGS.save_folder, sub_dir)).mkdir(
-            parents=True, exist_ok=True)
+        #pathlib.Path(os.path.join(FLAGS.save_folder, sub_dir)).mkdir(
+        #    parents=True, exist_ok=True)
+        
+        #with open(save_name, "w") as file:
+        #    bboxs = outputs[:, :4]
+        #    confs = outputs[:, -1]
 
-        with open(save_name, "w") as file:
-            bboxs = outputs[:, :4]
-            confs = outputs[:, -1]
-
-            file_name = img_name + "\n"
-            bboxs_num = str(len(bboxs)) + "\n"
-            file.write(file_name)
-            file.write(bboxs_num)
-            for box, conf in zip(bboxs, confs):
-                x = int(box[0] * img_width_raw)
-                y = int(box[1] * img_height_raw)
-                w = int(box[2] * img_width_raw) - int(box[0] * img_width_raw)
-                h = int(box[3] * img_height_raw) - int(box[1] * img_height_raw)
-                confidence = str(conf)
-                line = str(x) + " " + str(y) + " " + str(w) + " " + str(h) \
-                    + " " + confidence + " \n"
-                file.write(line)
+        #    file_name = img_name + "\n"
+        #    bboxs_num = str(len(bboxs)) + "\n"
+        #    file.write(file_name)
+        #    file.write(bboxs_num)
+        #    for box, conf in zip(bboxs, confs):
+        #        x = int(box[0] * img_width_raw)
+        #        y = int(box[1] * img_height_raw)
+        #        w = int(box[2] * img_width_raw) - int(box[0] * img_width_raw)
+        #        h = int(box[3] * img_height_raw) - int(box[1] * img_height_raw)
+        #        confidence = str(conf)
+        #        line = str(x) + " " + str(y) + " " + str(w) + " " + str(h) \
+        #            + " " + confidence + " \n"
+        #        file.write(line)
 
         # save images
         pathlib.Path(os.path.join(
@@ -155,11 +164,13 @@ def main(_argv):
                 parents=True, exist_ok=True)
         if FLAGS.save_image:
             for prior_index in range(len(outputs)):
-                if outputs[prior_index][15] >= FLAGS.vis_th:
+                if outputs[prior_index][13] >= FLAGS.vis_th:
                     draw_bbox_landm(img_raw, outputs[prior_index],
                                     img_height_raw, img_width_raw)
             cv2.imwrite(os.path.join('./results', cfg['sub_name'], sub_dir,
-                                     img_name), img_raw)
+                                     str(counter)+".png"), img_raw)
+                        
+            counter = counter+1
 
 
 if __name__ == '__main__':

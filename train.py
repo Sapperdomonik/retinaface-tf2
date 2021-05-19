@@ -97,12 +97,13 @@ def main(_):
         steps = checkpoint.step.numpy()
 
         total_loss, losses = train_step(inputs, labels)
+        
+        if steps % 100 == 0:
 
-        prog_bar.update("epoch={}/{}, loss={:.4f}, lr={:.1e}".format(
+            prog_bar.update("epoch={}/{}, loss={:.4f}, lr={:.1e}".format(
             ((steps - 1) // steps_per_epoch) + 1, cfg['epoch'],
             total_loss.numpy(), optimizer.lr(steps).numpy()))
 
-        if steps % 10 == 0:
             with summary_writer.as_default():
                 tf.summary.scalar(
                     'loss/total_loss', total_loss, step=steps)

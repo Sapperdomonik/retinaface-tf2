@@ -47,9 +47,7 @@ def make_example(img_name, img_path, target, is_binary):
                'image/object/landmark2/y': _float_feature(target[:, 9]),
                'image/object/landmark3/x': _float_feature(target[:, 10]),
                'image/object/landmark3/y': _float_feature(target[:, 11]),
-               'image/object/landmark4/x': _float_feature(target[:, 12]),
-               'image/object/landmark4/y': _float_feature(target[:, 13]),
-               'image/object/landmark/valid': _float_feature(target[:, 14])}
+               'image/object/landmark/valid': _float_feature(target[:, 12])}
     if is_binary:
         img_str = open(img_path, 'rb').read()
         feature['image/encoded'] = _bytes_feature([img_str])
@@ -90,11 +88,11 @@ def load_info(txt_path):
 
 
 def get_target(labels):
-    annotations = np.zeros((0, 15))
+    annotations = np.zeros((0, 13))
     if len(labels) == 0:
         return annotations
     for idx, label in enumerate(labels):
-        annotation = np.zeros((1, 15))
+        annotation = np.zeros((1, 13))
         # bbox
         annotation[0, 0] = label[0]  # x1
         annotation[0, 1] = label[1]  # y1
@@ -110,12 +108,10 @@ def get_target(labels):
         annotation[0, 9] = label[11]   # l2_y
         annotation[0, 10] = label[13]  # l3_x
         annotation[0, 11] = label[14]  # l3_y
-        annotation[0, 12] = label[16]  # l4_x
-        annotation[0, 13] = label[17]  # l4_y
         if (annotation[0, 4] < 0):
-            annotation[0, 14] = -1  # w/o landmark
+            annotation[0, 12] = -1  # w/o landmark
         else:
-            annotation[0, 14] = 1
+            annotation[0, 12] = 1
 
         annotations = np.append(annotations, annotation, axis=0)
     target = np.array(annotations)
@@ -145,6 +141,9 @@ def main(_):
     with tf.io.TFRecordWriter(FLAGS.output_path) as writer:
         for img_path, word in tqdm.tqdm(samples):
             target = get_target(word)
+            if target.shape[0] == 0: 
+                continue
+            img_name = os.path.basename(img_path).replace('.png', '')
             img_name = os.path.basename(img_path).replace('.jpg', '')
 
             tf_example = make_example(img_name=str.encode(img_name),
