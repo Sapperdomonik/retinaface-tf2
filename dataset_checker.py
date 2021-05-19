@@ -10,9 +10,9 @@ from modules.utils import draw_bbox_landm, draw_anchor
 
 
 flags.DEFINE_integer('batch_size', 1, 'batch size')
-flags.DEFINE_boolean('using_bin', True, 'whether use binary file or not')
-flags.DEFINE_boolean('using_encoding', True, 'whether visualization or not')
-flags.DEFINE_boolean('visualization', True, 'whether visualize dataset or not')
+flags.DEFINE_boolean('using_bin', False, 'whether use binary file or not')
+flags.DEFINE_boolean('using_encoding', False, 'whether visualization or not')
+flags.DEFINE_boolean('visualization', False, 'whether visualize dataset or not')
 
 
 def main(_):
@@ -32,9 +32,9 @@ def main(_):
         assert FLAGS.batch_size == 1
 
     if FLAGS.using_bin:
-        tfrecord_name = './data/widerface_train_bin.tfrecord'
+        tfrecord_name = 'data/widerface_train_bin.tfrecord'
     else:
-        tfrecord_name = './data/widerface_train.tfrecord'
+        tfrecord_name = 'data/widerface_train.tfrecord'
 
     train_dataset = load_tfrecord_dataset(
         tfrecord_name, FLAGS.batch_size, img_dim=640,
